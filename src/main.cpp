@@ -5,7 +5,8 @@ SDL_bool isColliding(const SDL_Rect *A, const SDL_Rect *B) {
   return SDL_HasIntersection(A, B);
 }
 struct GameState {
-  int score {0};
+  int score{0};
+  bool wasColliding{false};
 };
 int main(int argc, char *argv[]) {
   int maxFrameRate = 60;
@@ -137,31 +138,24 @@ int main(int argc, char *argv[]) {
         gameIsRunning = false;
         std::cout << "Escaped key pressed.\n";
       }
-      // if (event.button.button == SDL_BUTTON_LEFT) {
-      //   if (isColliding(&player, &stone1)) {
-      //     std::cout << "Is colliding.\n";
-      //     gameState->score--;
-      //   } else {
-      //     std::cout << "Is not colliding.\n";
-      //     gameState->score++;
-      //   }
-      // }
-      // Update player position based on mouse input
-    int mouseX{};
-    int mouseY{};
-    SDL_GetMouseState(&mouseX, &mouseY);
-    player.x = mouseX;
-    player.y = mouseY;
 
-    // Collision detection with stones
-    if (isColliding(&player, &stone1) ||
-        isColliding(&player, &stone2) ||
-        isColliding(&player, &stone3) ||
-        isColliding(&player, &stone4) ||
-        isColliding(&player, &stone5)) {
-        std::cout << "Collision detected!\n";
-        gameState->score++; // or handle collision however you need
-    }
+      // Collision detection with stones
+      bool isCollidingWithAnyStone =
+          isColliding(&player, &stone1) || isColliding(&player, &stone2) ||
+          isColliding(&player, &stone3) || isColliding(&player, &stone4) ||
+          isColliding(&player, &stone5);
+
+      if (isCollidingWithAnyStone) {
+        if (!gameState->wasColliding) {
+          std::cout << "Collision detected!\n";
+          gameState->score++; // Increment score only when collision starts
+        }
+      } else {
+        gameState->wasColliding = false; // Reset collision flag
+      }
+
+      gameState->wasColliding =
+          isCollidingWithAnyStone; // Update collision flag for next frame
     }
 
     SDL_SetRenderDrawColor(renderer, 0x66, 0x66, 0xBB, 0xFF);
@@ -217,9 +211,10 @@ int main(int argc, char *argv[]) {
     SDL_RenderCopy(renderer, stone_texture, NULL, &stone4);
     SDL_RenderCopy(renderer, stone_texture, NULL, &stone5);
     // SDL_RenderCopy(renderer, font_texture, NULL, &text);
-// Render the score
+    // Render the score
     std::string scoreText = "Score: " + std::to_string(gameState->score);
-    text_surface = TTF_RenderText_Solid(font, scoreText.c_str(), {255, 255, 255});
+    text_surface =
+        TTF_RenderText_Solid(font, scoreText.c_str(), {255, 255, 255});
     font_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
     SDL_RenderCopy(renderer, font_texture, NULL, &text);
 
