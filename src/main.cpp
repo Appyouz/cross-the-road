@@ -1,5 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <cstdlib> // For rand() and srand()
+#include <ctime>   // For time()
 #include <iostream>
 SDL_bool isColliding(const SDL_Rect *A, const SDL_Rect *B) {
   return SDL_HasIntersection(A, B);
@@ -9,6 +11,8 @@ struct GameState {
   bool wasColliding{false};
 };
 int main(int argc, char *argv[]) {
+
+  srand(time(NULL)); // Initialize random seed
   int maxFrameRate = 60;
   // GameState *gameState;
   GameState *gameState = new GameState();
@@ -186,21 +190,35 @@ int main(int argc, char *argv[]) {
       road2.x = -639;
 
     if (stone1.x > 639) {
-      stone1.x = -639;
-      stone1.y += 50;
+      stone1.x = -rand() % 300; // Randomize the position off-screen
+      stone1.y =
+          rand() % 400; // Randomize the y position within the window height
     }
 
-    if (stone2.x > 639)
-      stone2.x = -639;
+    if (stone2.x > 639) {
+      stone2.x = -rand() % 300; // Randomize the position off-screen
+      stone2.y =
+          rand() % 400; // Randomize the y position within the window height
+    }
 
-    if (stone3.x > 639)
-      stone3.x = -639;
+    if (stone3.x > 639) {
 
-    if (stone4.x > 639)
-      stone4.x = -639;
+      stone3.x = -rand() % 300; // Randomize the position off-screen
+      stone3.y =
+          rand() % 400; // Randomize the y position within the window height
+    }
 
-    if (stone5.x > 639)
-      stone5.x = -639;
+    if (stone4.x > 639) {
+      stone4.x = -rand() % 300; // Randomize the position off-screen
+      stone4.y =
+          rand() % 400; // Randomize the y position within the window height
+    }
+
+    if (stone5.x > 639) {
+      stone5.x = -rand() % 300; // Randomize the position off-screen
+      stone5.y =
+          rand() % 400; // Randomize the y position within the window height
+    }
 
     SDL_RenderCopy(renderer, road_texture, NULL, &road1);
     SDL_RenderCopy(renderer, road_texture, NULL, &road2);
